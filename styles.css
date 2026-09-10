@@ -1,19 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap');
 
 :root {
-  --gold: #c99a2e;
-  --gold-dark: #98731f;
-  --gold-light: #e8d39a;
+  --red: #B4232C;
+  --red-dark: #7F1720;
+  --red-light: #F3D6D8;
 
   --ink: #171612;
-  --muted: #6e6a61;
-  --paper: #f8f6f1;
-  --white: #ffffff;
-  --cream: #f1ede3;
-  --line: #ded9cf;
+  --muted: #6E6A61;
+  --paper: #F8F6F1;
+  --white: #FFFFFF;
+  --cream: #F1EDE3;
+  --line: #DED9CF;
 
   --dark: #171612;
-  --dark-soft: #211f1a;
+  --dark-soft: #211F1A;
 
   --max-width: 1180px;
 }
@@ -85,7 +85,7 @@ button {
 }
 
 .brand span {
-  color: var(--gold);
+  color: var(--red);
 }
 
 .site-header nav {
@@ -103,7 +103,7 @@ button {
 }
 
 .site-header nav a:hover {
-  color: var(--gold-dark);
+  color: var(--red-dark);
 }
 
 .header-cta {
@@ -114,19 +114,20 @@ button {
   height: 42px;
   padding: 0 18px;
 
-  background: var(--gold);
+  background: var(--red);
   color: #fff;
 
   font-size: 13px;
   font-weight: 700;
 
-  border: 1px solid var(--gold);
+  border: 1px solid var(--red);
+
   transition: all 0.2s ease;
 }
 
 .header-cta:hover {
-  background: var(--gold-dark);
-  border-color: var(--gold-dark);
+  background: var(--red-dark);
+  border-color: var(--red-dark);
 }
 
 
@@ -174,7 +175,8 @@ button {
   border-left: 1px solid var(--line);
 
   background: transparent;
-  color: var(--gold-dark);
+
+  color: var(--red-dark);
 
   font-size: 20px;
 
@@ -184,7 +186,7 @@ button {
 }
 
 .header-search button:hover {
-  background: #f4efe3;
+  background: var(--red-light);
 }
 
 
@@ -196,6 +198,7 @@ button {
   max-width: var(--max-width);
 
   margin: 0 auto;
+
   padding: 115px 5vw 95px;
 
   text-align: center;
@@ -203,12 +206,13 @@ button {
 
 .eyebrow,
 .section-label {
-  color: var(--gold-dark);
+  color: var(--red-dark);
 
   font-size: 11px;
   font-weight: 700;
 
   letter-spacing: 2px;
+
   text-transform: uppercase;
 }
 
@@ -218,7 +222,9 @@ button {
   margin: 22px auto 25px;
 
   font-size: clamp(44px, 6vw, 76px);
+
   line-height: 1.04;
+
   letter-spacing: -3px;
 
   font-weight: 600;
@@ -226,8 +232,10 @@ button {
 
 .hero h1 em {
   font-family: "Playfair Display", Georgia, serif;
+
   font-weight: 500;
-  color: var(--gold-dark);
+
+  color: var(--red-dark);
 }
 
 .hero-copy {
@@ -238,11 +246,13 @@ button {
   color: var(--muted);
 
   font-size: 17px;
+
   line-height: 1.8;
 }
 
 .hero-actions {
   display: flex;
+
   justify-content: center;
   align-items: center;
 
@@ -257,6 +267,7 @@ button {
   padding: 0 22px;
 
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
 
@@ -269,25 +280,31 @@ button {
 }
 
 .button.primary {
-  background: var(--gold);
+  background: var(--red);
+
   color: #fff;
-  border-color: var(--gold);
+
+  border-color: var(--red);
 }
 
 .button.primary:hover {
-  background: var(--gold-dark);
-  border-color: var(--gold-dark);
+  background: var(--red-dark);
+
+  border-color: var(--red-dark);
 }
 
 .button.secondary {
   background: transparent;
+
   color: var(--ink);
+
   border-color: var(--line);
 }
 
 .button.secondary:hover {
-  border-color: var(--gold);
-  color: var(--gold-dark);
+  border-color: var(--red);
+
+  color: var(--red-dark);
 }
 
 .hero-note {
@@ -317,6 +334,7 @@ button {
   width: 100%;
 
   background: var(--cream);
+
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -325,11 +343,14 @@ button {
   max-width: var(--max-width);
 
   margin: 0 auto;
+
   padding: 18px 5vw;
 
   display: flex;
+
   justify-content: center;
   align-items: center;
+
   flex-wrap: wrap;
 
   gap: 25px;
@@ -339,6 +360,7 @@ button {
   color: #888278;
 
   font-size: 10px;
+
   font-weight: 700;
 
   letter-spacing: 1.5px;
@@ -368,7 +390,9 @@ button {
   margin: 0;
 
   font-size: clamp(34px, 4vw, 53px);
+
   line-height: 1.1;
+
   letter-spacing: -2px;
 }
 
@@ -414,9 +438,10 @@ button {
 
   margin-bottom: 28px;
 
-  color: var(--gold-dark);
+  color: var(--red-dark);
 
   font-size: 12px;
+
   letter-spacing: 1px;
 }
 
@@ -424,6 +449,7 @@ button {
   margin: 0 0 10px;
 
   font-size: 21px;
+
   letter-spacing: -0.5px;
 }
 
@@ -433,6 +459,7 @@ button {
   color: var(--muted);
 
   font-size: 14px;
+
   line-height: 1.7;
 }
 
@@ -445,12 +472,14 @@ button {
   padding: 100px 5vw;
 
   background: var(--dark);
+
   color: #fff;
 }
 
 .dark-section > .section-label,
 .dark-section .section-label {
   max-width: var(--max-width);
+
   margin: 0 auto;
 }
 
@@ -477,9 +506,10 @@ button {
 }
 
 .pillars span {
-  color: var(--gold-light);
+  color: var(--red-light);
 
   font-size: 11px;
+
   letter-spacing: 1px;
 }
 
@@ -487,6 +517,7 @@ button {
   margin: 25px 0 15px;
 
   font-size: 28px;
+
   letter-spacing: -1px;
 }
 
@@ -496,6 +527,7 @@ button {
   color: #aaa69c;
 
   font-size: 14px;
+
   line-height: 1.8;
 }
 
@@ -524,13 +556,15 @@ button {
   color: var(--muted);
 
   font-size: 15px;
+
   line-height: 1.8;
 }
 
 .text-link {
-  color: var(--gold-dark);
+  color: var(--red-dark);
 
   font-size: 13px;
+
   font-weight: 700;
 }
 
@@ -544,12 +578,15 @@ button {
   background: var(--white);
 
   border: 1px solid var(--line);
+
   box-shadow: 0 15px 40px rgba(30, 25, 15, 0.06);
 }
 
 .score-top {
   display: flex;
+
   justify-content: space-between;
+
   align-items: flex-start;
 }
 
@@ -560,14 +597,16 @@ button {
 }
 
 .score-top strong {
-  color: var(--gold-dark);
+  color: var(--red-dark);
 
   font-size: 38px;
+
   line-height: 1;
 }
 
 .score-top strong span {
   color: var(--muted);
+
   font-size: 14px;
 }
 
@@ -583,9 +622,10 @@ button {
   display: block;
 
   width: 78%;
+
   height: 100%;
 
-  background: var(--gold);
+  background: var(--red);
 }
 
 .score-grid {
@@ -626,6 +666,7 @@ button {
   border-top: 1px solid var(--line);
 
   display: flex;
+
   justify-content: space-between;
 
   color: var(--muted);
@@ -634,7 +675,7 @@ button {
 }
 
 .reality strong {
-  color: var(--gold-dark);
+  color: var(--red-dark);
 }
 
 
@@ -700,10 +741,12 @@ button {
 .view h1 {
   max-width: 800px;
 
-  margin: 18px 0 18px;
+  margin: 18px 0;
 
   font-size: clamp(38px, 5vw, 62px);
+
   line-height: 1.08;
+
   letter-spacing: -2px;
 }
 
@@ -728,6 +771,7 @@ button {
 
 #question {
   width: 100%;
+
   min-height: 160px;
 
   padding: 20px;
@@ -748,7 +792,7 @@ button {
 }
 
 #question:focus {
-  border-color: var(--gold);
+  border-color: var(--red);
 }
 
 #question-form .button {
@@ -767,7 +811,7 @@ button {
 
   background: var(--cream);
 
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--red);
 
   font-size: 13px !important;
 }
@@ -799,7 +843,9 @@ button {
 
 .record-top {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
 
   gap: 15px;
@@ -807,15 +853,17 @@ button {
 
 .demo-pill {
   display: inline-flex;
+
   align-items: center;
 
   padding: 5px 9px;
 
-  background: #f1e7ca;
+  background: var(--red-light);
 
-  color: var(--gold-dark);
+  color: var(--red-dark);
 
   font-size: 9px;
+
   font-weight: 700;
 
   letter-spacing: 1px;
@@ -869,7 +917,9 @@ button {
   color: var(--ink);
 
   font-size: 10px;
+
   text-transform: uppercase;
+
   letter-spacing: 0.8px;
 }
 
@@ -885,11 +935,13 @@ button {
   color: var(--ink);
 
   font-size: 12px;
+
   font-weight: 700;
 }
 
 .outline-dark:hover {
   background: var(--ink);
+
   color: #fff;
 }
 
@@ -937,9 +989,10 @@ button {
 }
 
 .layer > span {
-  color: var(--gold-dark);
+  color: var(--red-dark);
 
   font-size: 10px;
+
   font-weight: 700;
 
   letter-spacing: 1.5px;
@@ -954,7 +1007,7 @@ button {
 }
 
 .layer.analysis {
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--red);
 }
 
 
@@ -1042,9 +1095,10 @@ tbody tr:last-child td {
 .advisory-card .mini {
   margin: 0 0 8px;
 
-  color: var(--gold-dark);
+  color: var(--red-dark);
 
   font-size: 10px;
+
   font-weight: 700;
 
   letter-spacing: 1.5px;
@@ -1075,6 +1129,7 @@ tbody tr:last-child td {
 
 .options {
   display: flex;
+
   flex-wrap: wrap;
 
   gap: 10px;
@@ -1092,14 +1147,17 @@ tbody tr:last-child td {
   color: var(--ink);
 
   font-size: 13px;
+
   font-weight: 600;
 }
 
 .options button:hover,
 .options button.selected {
-  border-color: var(--gold);
-  background: #f6edda;
-  color: var(--gold-dark);
+  border-color: var(--red);
+
+  background: var(--red-light);
+
+  color: var(--red-dark);
 }
 
 .decision-box {
@@ -1115,9 +1173,10 @@ tbody tr:last-child td {
 }
 
 #selected-option {
-  color: var(--gold-dark);
+  color: var(--red-dark);
 
   font-size: 11px;
+
   font-weight: 700;
 
   letter-spacing: 1px;
@@ -1142,7 +1201,7 @@ tbody tr:last-child td {
 
   margin-top: 12px;
 
-  color: var(--gold-dark);
+  color: var(--red-dark);
 
   font-size: 11px;
 }
@@ -1173,7 +1232,9 @@ footer {
   color: #fff;
 
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
 
   gap: 20px;
@@ -1224,6 +1285,7 @@ footer p {
 
   .pillars article {
     border-right: 0;
+
     border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   }
 
@@ -1268,6 +1330,7 @@ footer p {
 
   .hero {
     padding-top: 75px;
+
     padding-bottom: 70px;
   }
 
@@ -1287,11 +1350,13 @@ footer p {
 
   .hero-actions .button {
     width: 100%;
+
     max-width: 300px;
   }
 
   .section {
     padding-top: 70px;
+
     padding-bottom: 70px;
   }
 
@@ -1315,11 +1380,13 @@ footer p {
 
   .view {
     padding-top: 65px;
+
     padding-bottom: 65px;
   }
 
   footer {
     flex-direction: column;
+
     align-items: flex-start;
   }
 
