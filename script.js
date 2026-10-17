@@ -4,13 +4,13 @@ const options = {
     name: "Option A",
     location: "Toronto",
     cost: "$$$",
-    evidence: "Strong",
-    verification: "Confirmed demo",
-    freshness: "Current demo",
-    realityGap: "Low",
+    evidence: "Illustrative sample",
+    verification: "Not verified",
+    freshness: "Not assessed",
+    realityGap: "Illustrative only",
     trust: 84,
     bestFor: "Reliability",
-    confidence: "High",
+    confidence: "Illustrative only",
     claim: "Strongest sample evidence across the decision area.",
     signals: "12 demo signals",
     promise: "Excellent career opportunities.",
@@ -23,13 +23,13 @@ const options = {
     name: "Option B",
     location: "Vancouver",
     cost: "$$",
-    evidence: "Moderate",
-    verification: "Partial demo",
-    freshness: "Current demo",
-    realityGap: "Medium",
+    evidence: "Illustrative sample",
+    verification: "Not verified",
+    freshness: "Not assessed",
+    realityGap: "Illustrative only",
     trust: 78,
     bestFor: "Balanced use",
-    confidence: "Medium",
+    confidence: "Illustrative only",
     claim:
       "Positive online reputation with some unresolved conflicts.",
     signals: "9 demo signals",
@@ -43,13 +43,13 @@ const options = {
     name: "Option C",
     location: "Calgary",
     cost: "$",
-    evidence: "Limited",
-    verification: "Needs verification",
-    freshness: "Current demo",
-    realityGap: "High",
+    evidence: "Illustrative sample",
+    verification: "Not verified",
+    freshness: "Not assessed",
+    realityGap: "Illustrative only",
     trust: 64,
     bestFor: "Budget first",
-    confidence: "Low",
+    confidence: "Illustrative only",
     claim:
       "Lower cost signal but weaker evidence and more uncertainty.",
     signals: "6 demo signals",
@@ -212,9 +212,7 @@ function renderExplore() {
                 DEMO OPTION
               </span>
 
-              <span class="confidence">
-                ${option.confidence} confidence
-              </span>
+              <span class="confidence">Sample values only</span>
 
             </div>
 
@@ -247,8 +245,8 @@ function renderExplore() {
               </span>
 
               <span>
-                <b>Trust Score</b>
-                ${option.trust}/100
+                <b>Illustrative score</b>
+                ${option.trust}/100 (sample)
               </span>
 
             </div>
@@ -404,7 +402,7 @@ function renderVerification(id = "optionA") {
       </span>
 
       <p>
-        September 2026 demo.
+        No real verification has occurred.
       </p>
 
     </div>
@@ -431,7 +429,7 @@ function renderVerification(id = "optionA") {
       data-trust="${id}"
       type="button"
     >
-      See Trust Score →
+      See Illustrative score →
     </button>
 
   `;
@@ -489,7 +487,7 @@ function renderTrust(id = "optionA") {
       <div class="score-top">
 
         <span>
-          Trust Score
+          Illustrative score
         </span>
 
         <strong>
@@ -522,7 +520,7 @@ function renderTrust(id = "optionA") {
         <span>
           Source quality
           <b>
-            High demo
+            Not assessed
           </b>
         </span>
 
@@ -581,9 +579,7 @@ function renderTrust(id = "optionA") {
       </span>
 
       <p>
-        The score is intended to reflect evidence strength,
-        verification, freshness, source quality and conflicts.
-        It should never be treated as a mysterious number.
+        A production score must be calculated from eligible, traceable evidence using documented rules. These sample numbers are not calculated scores.
       </p>
 
     </div>
@@ -637,10 +633,10 @@ function renderComparison() {
   const rows = [
 
     [
-      "Trust Score",
-      "84/100",
-      "78/100",
-      "64/100"
+      "Illustrative score",
+      "84/100 (sample)",
+      "78/100 (sample)",
+      "64/100 (sample)"
     ],
 
     [
@@ -650,29 +646,14 @@ function renderComparison() {
       "$"
     ],
 
-    [
-      "Evidence",
-      "Strong",
-      "Moderate",
-      "Limited"
-    ],
+    ["Evidence", "Illustrative sample", "Illustrative sample", "Illustrative sample"],
+
+    ["Verification", "Not verified", "Not verified", "Not verified"],
+
+    ["Reality gap", "Illustrative only", "Illustrative only", "Illustrative only"],
 
     [
-      "Verification",
-      "Confirmed",
-      "Partial",
-      "Needs verification"
-    ],
-
-    [
-      "Reality Gap",
-      "Low",
-      "Medium",
-      "High"
-    ],
-
-    [
-      "Best fit",
+      "Illustrative fit",
       "Reliability",
       "Balanced",
       "Budget"
@@ -833,9 +814,7 @@ function updateDecision() {
   if (copy) {
 
     copy.textContent =
-      "The recommendation weighs illustrative evidence, " +
-      "verification, your priorities and stated tradeoffs. " +
-      "A production recommendation would use live intelligence.";
+      "This is a static preview using illustrative sample data. It is not based on live sources or a verified recommendation.";
 
   }
 

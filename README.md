@@ -1,37 +1,45 @@
-# LearnifyNG Gold Prototype
+# LearnifyNG — Local Decision Intelligence Prototype
 
-This prototype presents the expanded LearnifyNG concept.
+LearnifyNG is a prototype for helping people investigate local questions, compare options, understand evidence quality and make better-informed decisions.
 
-## Core idea
+**This GitHub Pages version is a static interactive preview.** It uses illustrative sample data. It does not currently call an AI model, search the live web, connect to Supabase, independently verify claims or calculate real trust scores.
 
-LearnifyNG combines web intelligence, social signals, reviews, news, advertisements, public data and human intelligence to help users make better decisions.
+## Product journey
 
-The intended journey is:
+**Ask → Find → Check → Understand → Compare → Decide**
 
-Discover → Cross check → Verify → Trust Score → AI Analysis → Human Advisory → Comparison → Decision → Connection
+The intended product should show users:
+- what was found and where it came from;
+- the location and date a claim applies to;
+- what supports or conflicts with a claim;
+- what remains unknown;
+- how a recommendation follows from the evidence and the user's priorities.
 
-## Main difference
+## Trust rules
 
-LearnifyNG is not designed to be another general AI chatbot.
+- An AI-generated statement is not verified evidence.
+- A community report is a report, not proof by itself.
+- Sources from another place or time must not silently support a local answer.
+- Duplicates and copied reports must not be counted as independent corroboration.
+- Conflicts and unknowns must remain visible.
+- Any eventual confidence score must be reproducible from documented evidence rules.
+- Sample data must never be presented as live research or a real recommendation.
 
-It aims to expose the gap between what an option promises and what happens in reality.
+See [the trust contract](docs/trust-contract.md) and [the AI investigation pipeline](docs/ai-investigation-pipeline.md).
 
-The Trust Score is intended to be explainable through evidence strength, verification, source quality, freshness and conflicts.
+## Current implementation
 
-## Three core pillars
+- Static HTML, CSS and vanilla JavaScript.
+- Navigation, sample option cards, sample comparison, and sample priority selection.
+- Browser-local storage for the current demo question, option and priorities.
+- No backend, AI API integration, source ingestion, live verification or production confidence engine.
 
-1. Local Intelligence
-2. Advisory
-3. Comparison
+## Proposed first production milestone
 
-## Prototype note
+The first real investigation pipeline should turn a user question into a research plan, discover traceable sources, extract source-backed claims, check locality and dates, and save an evidence ledger. AI may assist with extraction and analysis, but must not mark evidence verified or decide the final confidence score.
 
-All records, Trust Scores and verification states shown here are illustrative demo data. No real investigation, scraping, human field research, transaction or external recommendation has been performed by this prototype.
-
-## Production direction
-
-A production system would require lawful data collection, source governance, AI APIs, evidence storage, verification workflows, human intelligence operations, Trust Score logic, user accounts, partner management and a recommendation or connection layer.
+For deployment, AI calls and provider keys must live in a server-side function, not in browser JavaScript. The current static prototype is not the production backend.
 
 ## GitHub Pages
 
-The files can be published from the repository root using GitHub Pages.
+The preview can be published from the repository root using GitHub Pages.

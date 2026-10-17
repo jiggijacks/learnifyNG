@@ -330,6 +330,34 @@ img {
 }
 
 /* ========================================
+   PROTOTYPE NOTICE
+======================================== */
+
+.prototype-notice {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--line);
+  background: var(--red-light);
+  color: var(--ink);
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.prototype-notice strong {
+  color: var(--red-dark);
+  font-weight: 700;
+}
+
+.prototype-notice span {
+  color: var(--muted);
+}
+
+/* ========================================
    SOURCE STRIP
 ======================================== */
 
@@ -352,6 +380,13 @@ img {
   justify-content: space-between;
 
   gap: 18px;
+}
+
+.source-strip .source-strip-intro {
+  color: var(--ink);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
 }
 
 .source-strip span {
