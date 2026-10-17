@@ -634,9 +634,9 @@ function renderComparison() {
 
     [
       "Illustrative score",
-      "84/100",
-      "78/100",
-      "64/100"
+      "84/100 (sample)",
+      "78/100 (sample)",
+      "64/100 (sample)"
     ],
 
     [
@@ -653,7 +653,7 @@ function renderComparison() {
     ["Reality gap", "Illustrative only", "Illustrative only", "Illustrative only"],
 
     [
-      "Best fit",
+      "Illustrative fit",
       "Reliability",
       "Balanced",
       "Budget"
