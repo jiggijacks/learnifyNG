@@ -1608,3 +1608,60 @@ footer p {
     width: 100%;
   }
 }
+
+
+/* ========================================
+   LIVE INVESTIGATION RESULTS
+======================================== */
+.live-investigation h2 {
+  margin: 18px 0 10px;
+  font-size: clamp(24px, 4vw, 34px);
+  letter-spacing: -1px;
+}
+.live-investigation .record-summary {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.live-investigation > small {
+  display: block;
+  margin-top: 12px;
+  color: var(--muted);
+}
+.live-sources {
+  margin-top: 28px;
+  border-top: 1px solid var(--line);
+}
+.live-sources > h3 {
+  margin: 20px 0 12px;
+  font-size: 18px;
+}
+.live-source {
+  display: grid;
+  gap: 8px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+.live-source strong {
+  font-size: 14px;
+}
+.live-source p {
+  margin: 0;
+  white-space: pre-line;
+}
+.live-source a {
+  width: fit-content;
+  color: var(--red-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+.live-source small {
+  color: var(--muted);
+  font-size: 10px;
+}
+.live-error {
+  border-color: #b45309;
+}
+.fallback-card {
+  border-style: dashed;
+}
