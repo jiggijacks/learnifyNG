@@ -932,145 +932,166 @@ function renderEvidence(id = "optionA") {
 
 
 /* ========================================
+   LIVE INVESTIGATION
+======================================== */
+
+let investigationClient = null;
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[char]);
+}
+
+function getInvestigationClient() {
+  const config = window.LEARNIFY_CONFIG || {};
+  if (!config.supabaseUrl || !config.supabaseAnonKey ||
+      config.supabaseUrl.includes("YOUR_PROJECT") ||
+      config.supabaseAnonKey.includes("YOUR_PUBLIC_ANON_KEY")) {
+    return null;
+  }
+  if (!window.supabase || typeof window.supabase.createClient !== "function") return null;
+  if (!investigationClient) {
+    investigationClient = window.supabase.createClient(
+      config.supabaseUrl,
+      config.supabaseAnonKey,
+      { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
+    );
+  }
+  return investigationClient;
+}
+
+function renderInvestigationState(title, message, kind = "info", sources = [], investigationId = "") {
+  const container = document.querySelector("#explore-list");
+  if (!container) return;
+  const sourceMarkup = sources.length ? `
+    <section class="live-sources" aria-label="Research sources">
+      <h3>Sources to check (${sources.length})</h3>
+      ${sources.map(source => {
+        const safeUrl = /^https?:\/\//i.test(source.url || "") ? source.url : "";
+        return `
+          <article class="live-source">
+            <strong>${escapeHTML(source.title || safeUrl || "Untitled source")}</strong>
+            ${source.excerpt ? `<p>${escapeHTML(source.excerpt)}</p>` : ""}
+            ${safeUrl ? `<a href="${escapeHTML(safeUrl)}" target="_blank" rel="noopener noreferrer">Open original source ↗</a>` : ""}
+            <small>Research lead · Not independently verified</small>
+          </article>`;
+      }).join("")}
+    </section>` : "";
+  container.innerHTML = `
+    <article class="record-card live-investigation live-${escapeHTML(kind)}" aria-live="polite">
+      <div class="record-top"><span class="demo-pill">LIVE INVESTIGATION</span><span class="confidence">${kind === "loading" ? "Researching" : kind === "error" ? "Needs attention" : "Evidence status"}</span></div>
+      <h2>${escapeHTML(title)}</h2>
+      <p class="record-summary">${escapeHTML(message)}</p>
+      ${investigationId ? `<small>Investigation reference: ${escapeHTML(investigationId)}</small>` : ""}
+      ${sourceMarkup}
+    </article>
+    <article class="record-card fallback-card">
+      <h3>Help improve this investigation</h3>
+      <p>If the available sources do not answer your question, add the exact area, provider, date or condition you want checked. Learnify will not turn missing evidence into a confident recommendation.</p>
+      <button class="outline-dark" type="button" data-route="ask">Refine your question →</button>
+    </article>`;
+}
+
+async function runInvestigation(question) {
+  currentQuestion = question;
+  localStorage.setItem("learnifyngQuestion", currentQuestion);
+  const questionInput = document.querySelector("#question");
+  if (questionInput) questionInput.value = currentQuestion;
+  updateContext();
+  go("explore");
+  renderInvestigationState("Investigating your question", "Checking public web sources. Source findings are research leads, not verified claims.", "loading");
+
+  const client = getInvestigationClient();
+  if (!client) {
+    renderInvestigationState(
+      "Live research is not connected yet",
+      "This deployment needs its Supabase project URL, public anon key, Auth configuration and deployed investigate Edge Function. No sample results are being presented as live findings."
+    );
+    return;
+  }
+
+  try {
+    let { data: sessionData, error: sessionError } = await client.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!sessionData.session) {
+      const signIn = await client.auth.signInAnonymously();
+      if (signIn.error) {
+        renderInvestigationState(
+          "One setup step is still needed",
+          "Live research requires Supabase Auth. Enable anonymous sign-ins for this project or connect your existing sign-in flow, then try again.",
+          "error"
+        );
+        return;
+      }
+      sessionData = { session: signIn.data.session };
+    }
+    const localityMatch = currentQuestion.match(/\b(?:in|near|around|at)\s+([A-Z][\w-]*(?:\s+[A-Z][\w-]*){0,3})/);
+    const { data, error } = await client.functions.invoke("investigate", {
+      body: { question: currentQuestion, locality: localityMatch ? localityMatch[1] : "" }
+    });
+    if (error) throw error;
+    if (!data || data.error) {
+      renderInvestigationState(
+        "The investigation could not be completed",
+        data?.message || "The research service returned an error. Your question has not been presented as a successful result.",
+        "error",
+        [],
+        data?.investigationId || ""
+      );
+      return;
+    }
+    renderInvestigationState(
+      data.status === "insufficient_evidence" ? "Not enough useful evidence yet" : "What the research found",
+      (data.answer || "No useful sourced answer was returned.") + "\n\n" + (data.notice || "Sources are leads, not independent verification."),
+      data.status === "insufficient_evidence" ? "info" : "success",
+      Array.isArray(data.sources) ? data.sources : [],
+      data.investigationId || ""
+    );
+  } catch (error) {
+    console.error("Learnify investigation request failed", error);
+    renderInvestigationState(
+      "We couldn't finish this investigation",
+      "Check your connection and the Supabase function configuration, then try again. Learnify will not substitute invented results when live research fails.",
+      "error"
+    );
+  }
+}
+
+/* ========================================
    SEARCH
 ======================================== */
 
 function setupSearch() {
-
-  const form =
-    document.querySelector(
-      "#header-search"
-    );
-
-
-  if (!form) {
-    return;
-  }
-
-
-  form.addEventListener(
-    "submit",
-    event => {
-
-      event.preventDefault();
-
-
-      const input =
-        document.querySelector(
-          "#header-search-input"
-        );
-
-
-      if (!input) {
-        return;
-      }
-
-
-      const value =
-        input.value.trim();
-
-
-      if (!value) {
-        return;
-      }
-
-
-      currentQuestion =
-        value;
-
-
-      localStorage.setItem(
-        "learnifyngQuestion",
-        currentQuestion
-      );
-
-
-      const question =
-        document.querySelector(
-          "#question"
-        );
-
-
-      if (question) {
-        question.value =
-          currentQuestion;
-      }
-
-
-      updateContext();
-
-      renderExplore();
-
-      go("explore");
-
-    }
-  );
-
+  const form = document.querySelector("#header-search");
+  if (!form) return;
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    const input = document.querySelector("#header-search-input");
+    const value = input ? input.value.trim() : "";
+    if (value.length < 3) return;
+    runInvestigation(value);
+  });
 }
-
 
 /* ========================================
    QUESTION FORM
 ======================================== */
 
 function setupQuestionForm() {
-
-  const form =
-    document.querySelector(
-      "#question-form"
-    );
-
-
-  if (!form) {
-    return;
-  }
-
-
-  form.addEventListener(
-    "submit",
-    event => {
-
-      event.preventDefault();
-
-
-      const input =
-        document.querySelector(
-          "#question"
-        );
-
-
-      if (!input) {
-        return;
-      }
-
-
-      const value =
-        input.value.trim();
-
-
-      if (value) {
-
-        currentQuestion =
-          value;
-
-      }
-
-
-      localStorage.setItem(
-        "learnifyngQuestion",
-        currentQuestion
-      );
-
-
-      updateContext();
-
-      renderExplore();
-
+  const form = document.querySelector("#question-form");
+  if (!form) return;
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    const input = document.querySelector("#question");
+    const value = input ? input.value.trim() : "";
+    if (value.length < 3) {
+      renderInvestigationState("Add a little more detail", "Enter a question of at least 3 characters so Learnify can investigate it.");
       go("explore");
-
+      return;
     }
-  );
-
+    runInvestigation(value);
+  });
 }
 
 
