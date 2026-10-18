@@ -29,7 +29,6 @@ function collectTextAndCitations(response: any) {
           citations.push({
             title: annotation.title || annotation.url,
             url: annotation.url,
-            excerpt: content.text || "",
           });
         }
       }
@@ -114,7 +113,7 @@ Deno.serve(async (req) => {
         user_id: userData.user.id,
         title: source.title.slice(0, 500),
         url: source.url,
-        excerpt: source.excerpt.slice(0, 5000) || null,
+        excerpt: null,
         status: "needs_investigation",
         locality: locality || null,
       }));
@@ -133,7 +132,7 @@ Deno.serve(async (req) => {
       investigationId: run.id,
       status,
       answer: text || "I couldn't find useful sourced information for this question yet. Try adding your city or area, or make the question more specific.",
-      sources: usable.map(({ title, url, excerpt }) => ({ title, url, excerpt })),
+      sources: usable.map(({ title, url }) => ({ title, url })),
       notice: "Sources are research leads, not independently verified findings. Check dates, locality and conflicting information before relying on them.",
     });
   } catch (error) {
