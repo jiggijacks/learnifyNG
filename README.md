@@ -32,7 +32,9 @@ See [the trust contract](docs/trust-contract.md) and [the AI investigation pipel
 - Static HTML, CSS and vanilla JavaScript.
 - Navigation, sample option cards, sample comparison, and sample priority selection.
 - Browser-local storage for the current demo question, option and priorities.
-- Live investigation frontend wiring and Supabase Edge Function source are present on the feature branch; deployment/configuration is still required\n- Evidence records are stored as `needs_investigation`; AI cannot mark sources verified\n- No production confidence engine, community voting/comments, or moderator verification UI yet.
+- Live investigation frontend wiring and Supabase Edge Function source are present on the feature branch; deployment/configuration is still required
+- Evidence records are stored as `needs_investigation`; AI cannot mark sources verified
+- No production confidence engine, community voting/comments, or moderator verification UI yet.
 
 ## Proposed first production milestone
 
