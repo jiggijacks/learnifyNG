@@ -18,7 +18,7 @@ function json(body: unknown, status = 200) {
 
 function collectTextAndCitations(response: any) {
   const parts: string[] = [];
-  const citations: Array<{ title: string; url: string; excerpt: string }> = [];
+  const citations: Array<{ title: string; url: string }> = [];
   for (const item of response?.output ?? []) {
     if (item.type !== "message") continue;
     for (const content of item.content ?? []) {
