@@ -92,6 +92,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: "gpt-4.1-mini",
         tools: [{ type: "web_search" }],
+        tool_choice: "required",
         instructions,
         input: question,
       }),
