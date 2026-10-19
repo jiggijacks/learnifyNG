@@ -1,19 +1,19 @@
 # LearnifyNG — Local Decision Intelligence Prototype
 
-LearnifyNG is a prototype for helping people investigate local questions, compare options, understand evidence quality and make better-informed decisions.
+LearnifyNG helps people investigate local questions, compare options, understand evidence quality and make better-informed decisions.
 
-**This GitHub Pages version remains a prototype, with a first live-investigation code path now added on branch `feat/live-investigation-m1`.** The live path requires a configured Supabase project, Auth, database migration, deployed Edge Function, and server-side `OPENAI_API_KEY` before it can run. Without those settings, the UI explicitly reports that live research is not connected and does not present sample data as live findings.
+**The current GitHub Pages app is still a prototype.** The repository contains a live-investigation code path, but it will work only after the intended Supabase project is configured, migrations are applied, the Edge Function is deployed, and server-side secrets are added. Until then, the UI must clearly say live research is not connected and must not present sample data as live findings.
 
 ## Product journey
 
 **Ask → Find → Check → Understand → Compare → Decide**
 
-The intended product should show users:
+Learnify should show users:
 - what was found and where it came from;
 - the location and date a claim applies to;
 - what supports or conflicts with a claim;
 - what remains unknown;
-- how a recommendation follows from the evidence and the user's priorities.
+- how a recommendation follows from evidence and the user's priorities.
 
 ## Trust rules
 
@@ -29,32 +29,27 @@ See [the trust contract](docs/trust-contract.md) and [the AI investigation pipel
 
 ## Current implementation
 
-- Static HTML, CSS and vanilla JavaScript.
+- Static HTML, CSS and vanilla JavaScript for the existing preview.
 - Navigation, sample option cards, sample comparison, and sample priority selection.
-- Browser-local storage for the current demo question, option and priorities.
-- Live investigation frontend wiring and Supabase Edge Function source are present on the feature branch; deployment/configuration is still required
-- Evidence records are stored as `needs_investigation`; AI cannot mark sources verified
-- No production confidence engine, community voting/comments, or moderator verification UI yet.
+- Browser-local storage for demo question, option and priorities.
+- Live investigation frontend wiring that invokes a Supabase Edge Function.
+- OpenAI Responses API web search in the server-side `investigate` Edge Function.
+- Per-user investigation records and source provenance ledger with row-level security.
+- Server-side-only writes after caller identity validation; browser clients are read-only for investigation records.
+- AI-discovered sources remain `needs_investigation`. AI does not mark sources verified or calculate confidence scores.
+- No community voting/comments, moderator verification UI, production confidence engine, or public-launch rate limiting yet.
 
-## Proposed first production milestone
+## Deployment
 
-The first real investigation pipeline should turn a user question into a research plan, discover traceable sources, extract source-backed claims, check locality and dates, and save an evidence ledger. AI may assist with extraction and analysis, but must not mark evidence verified or decide the final confidence score.
+GitHub Pages does not deploy Supabase migrations or Edge Functions. Follow the [setup and smoke-test checklist](docs/live-investigation-setup-and-tests.md).
 
-For deployment, AI calls and provider keys must live in a server-side function, not in browser JavaScript. The current static prototype is not the production backend.
+The setup requires:
+- applying both migrations in `supabase/migrations/` in timestamp order;
+- deploying `supabase/functions/investigate/index.ts`;
+- configuring the public Supabase URL and anon key in `config.js`;
+- setting `OPENAI_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` as Supabase Edge Function secrets;
+- enabling Supabase Auth anonymous sign-ins or connecting an existing sign-in flow.
 
-## GitHub Pages
+**Never put OpenAI or service-role keys in browser files or Git.** The public URL and anon key are browser configuration only and must be paired with correctly configured RLS.
 
-The preview can be published from the repository root using GitHub Pages.
-
-
-## Live investigation milestone (feature branch)
-
-See [setup and smoke tests](docs/live-investigation-setup-and-tests.md). The implementation adds:
-- An authenticated Supabase Edge Function calling the OpenAI Responses API with web search.
-- Per-user investigation records and a source ledger with row-level security.
-- Source links and clear empty/error states in the existing search flow.
-- A public-only browser config template in `config.js`; provider secrets remain server-side.
-
-**Not live until configured:** GitHub Pages does not deploy Supabase migrations or Edge Functions. Configure the Supabase project, apply the migration, deploy the function, set `OPENAI_API_KEY`, and replace the public URL/anon-key placeholders in `config.js`. Enable Supabase anonymous sign-ins or integrate an existing sign-in flow. Review the smoke-test checklist before relying on results.
-
-Sources are research leads, not independently verified evidence. The current endpoint intentionally provides no numerical confidence score and does not support votes/comments.
+Live research is not considered deployed until the setup and smoke tests pass. Sources are research leads, not independently verified evidence. Community feedback, moderation, and numerical confidence scoring remain out of scope for the first milestone.
