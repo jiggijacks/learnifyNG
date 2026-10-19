@@ -1,6 +1,6 @@
 // Supabase Edge Function: investigate
-// Required secrets: OPENAI_API_KEY. Supabase URL/anon key are provided by the runtime.
-// Authentication is required; keep provider keys server-side.
+// Required server-side secrets: OPENAI_API_KEY and SUPABASE_SERVICE_ROLE_KEY.
+// The service-role key is never sent to the browser. User identity is verified first.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -47,32 +47,59 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const openaiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!supabaseUrl || !supabaseAnonKey || !openaiKey) {
-    return json({ error: "server_not_configured", message: "The investigation service is not configured yet." }, 503);
+  if (!supabaseUrl || !supabaseAnonKey || !serviceRoleKey || !openaiKey) {
+    return json({
+      error: "server_not_configured",
+      message: "The investigation service is not configured yet.",
+    }, 503);
   }
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  // Use the caller's JWT only to establish identity. Never trust a user_id from request JSON.
+  const userClient = createClient(supabaseUrl, supabaseAnonKey, {
     global: { headers: { Authorization: authHeader } },
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+  const { data: userData, error: userError } = await userClient.auth.getUser();
   if (userError || !userData.user) return json({ error: "invalid_session" }, 401);
 
+  // All writes happen server-side after identity validation. This prevents a browser client
+  // from setting arbitrary investigation states or inserting a source as "verified".
+  const admin = createClient(supabaseUrl, serviceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
   let payload: { question?: unknown; locality?: unknown };
-  try { payload = await req.json(); } catch { return json({ error: "invalid_json" }, 400); }
+  try {
+    payload = await req.json();
+  } catch {
+    return json({ error: "invalid_json" }, 400);
+  }
   const question = typeof payload.question === "string" ? payload.question.trim() : "";
   const locality = typeof payload.locality === "string" ? payload.locality.trim().slice(0, 160) : "";
   if (question.length < 3 || question.length > 2000) {
-    return json({ error: "question_length_invalid", message: "Enter a question between 3 and 2,000 characters." }, 400);
+    return json({
+      error: "question_length_invalid",
+      message: "Enter a question between 3 and 2,000 characters.",
+    }, 400);
   }
 
-  const { data: run, error: insertError } = await supabase
+  const { data: run, error: insertError } = await admin
     .from("investigations")
-    .insert({ user_id: userData.user.id, question, status: "pending", provider: "openai", model: "gpt-4.1-mini" })
+    .insert({
+      user_id: userData.user.id,
+      question,
+      status: "pending",
+      provider: "openai",
+      model: "gpt-4.1-mini",
+    })
     .select("id")
     .single();
-  if (insertError || !run) return json({ error: "could_not_save_investigation" }, 500);
+  if (insertError || !run) {
+    console.error("Could not create investigation", insertError?.message);
+    return json({ error: "could_not_save_investigation" }, 500);
+  }
 
   try {
     const instructions = [
@@ -83,12 +110,17 @@ Deno.serve(async (req) => {
       "Prioritize the requested locality and clearly say when evidence is national, regional, outdated, or locality is unknown.",
       "Cite sources inline and summarize what is known, what conflicts, and what remains unknown.",
       "If useful evidence is absent, say insufficient evidence and suggest focused next steps. Never fabricate sources, quotations, dates, or local reports.",
-      locality ? `Requested locality: ${locality}. Do not treat broader sources as locality-specific proof.` : "If location materially affects the answer and is missing, explain the limitation and ask for it.",
+      locality
+        ? `Requested locality: ${locality}. Do not treat broader sources as locality-specific proof.`
+        : "If location materially affects the answer and is missing, explain the limitation and ask for it.",
     ].join("\n");
 
     const upstream = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
-      headers: { "Authorization": `Bearer ${openaiKey}`, "Content-Type": "application/json" },
+      headers: {
+        "Authorization": `Bearer ${openaiKey}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         model: "gpt-4.1-mini",
         tools: [{ type: "web_search" }],
@@ -98,16 +130,26 @@ Deno.serve(async (req) => {
       }),
       signal: AbortSignal.timeout(45000),
     });
+
     if (!upstream.ok) {
       const providerBody = await upstream.text();
       console.error("OpenAI Responses API error", upstream.status, providerBody.slice(0, 500));
-      await supabase.from("investigations").update({ status: "failed", error_code: "research_provider_error", completed_at: new Date().toISOString() }).eq("id", run.id);
-      return json({ error: "research_provider_error", message: "Live research could not be completed. Please try again shortly.", investigationId: run.id }, 502);
+      await admin.from("investigations").update({
+        status: "failed",
+        error_code: "research_provider_error",
+        completed_at: new Date().toISOString(),
+      }).eq("id", run.id).eq("user_id", userData.user.id);
+      return json({
+        error: "research_provider_error",
+        message: "Live research could not be completed. Please try again shortly.",
+        investigationId: run.id,
+      }, 502);
     }
 
     const response = await upstream.json();
     const { text, citations } = collectTextAndCitations(response);
     const usable = citations.filter((c) => /^https?:\/\//i.test(c.url));
+
     if (usable.length) {
       const sourceRows = usable.map((source) => ({
         investigation_id: run.id,
@@ -118,16 +160,19 @@ Deno.serve(async (req) => {
         status: "needs_investigation",
         locality: locality || null,
       }));
-      const { error: sourceError } = await supabase.from("investigation_sources").upsert(sourceRows, { onConflict: "investigation_id,url", ignoreDuplicates: true });
+      const { error: sourceError } = await admin
+        .from("investigation_sources")
+        .upsert(sourceRows, { onConflict: "investigation_id,url", ignoreDuplicates: true });
       if (sourceError) console.error("Could not persist source ledger", sourceError.message);
     }
 
     const status = usable.length ? "completed" : "insufficient_evidence";
-    await supabase.from("investigations").update({
+    const { error: updateError } = await admin.from("investigations").update({
       status,
       summary: text || "No useful sourced answer was returned. Try a more specific question or add the relevant locality.",
       completed_at: new Date().toISOString(),
-    }).eq("id", run.id);
+    }).eq("id", run.id).eq("user_id", userData.user.id);
+    if (updateError) console.error("Could not save investigation result", updateError.message);
 
     return json({
       investigationId: run.id,
@@ -138,7 +183,15 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     console.error("Investigation failed", error instanceof Error ? error.message : error);
-    await supabase.from("investigations").update({ status: "failed", error_code: "investigation_failed", completed_at: new Date().toISOString() }).eq("id", run.id);
-    return json({ error: "investigation_failed", message: "The investigation was interrupted. Your question was saved; please try again.", investigationId: run.id }, 500);
+    await admin.from("investigations").update({
+      status: "failed",
+      error_code: "investigation_failed",
+      completed_at: new Date().toISOString(),
+    }).eq("id", run.id).eq("user_id", userData.user.id);
+    return json({
+      error: "investigation_failed",
+      message: "The investigation was interrupted. Your question was saved; please try again.",
+      investigationId: run.id,
+    }, 500);
   }
 });
